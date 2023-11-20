@@ -1,0 +1,66 @@
+.form-container {
+  max-width: 100%;
+  margin: 20px 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgb(226, 232, 240);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: -20px -20px 20px -20px;  
+}
+
+.my-form{
+  margin:10px;
+}
+
+h1{
+  text-align: center;
+}
+
+.my-form label {
+  display: block;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.my-form input,
+.my-form textarea,
+.my-form select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;  
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.question-container {
+  display: flex;
+  align-items: center;  
+}
+
+.question-container input {
+  flex: 1;  
+  margin-bottom: 10px;  
+  margin-top: 10px;
+}
+
+.nomor{
+  margin-right: 10px;
+}
+
+.input-type{
+  background-color: #ebebeb;  
+}
+
+.input-type:hover{
+  cursor: no-drop;
+}

@@ -1,0 +1,89 @@
+.btn {
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .delete {
+    background-color: #dc3545;
+  }
+  
+  .delete:hover {
+    background-color: #a52834;
+  }
+  
+  .edit {
+    background-color: #2dbb31;
+    margin-right: 10px;
+  }
+  
+  .edit:hover {  
+    background-color: #4caf50;
+  }
+  
+  .add {
+    border-radius: 50%;
+    font-size: 50px;
+    background-color: #1578e3;
+    padding: 0px 15px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1;
+    cursor: pointer;
+    border: none;
+    color: white;
+  }
+  
+  .add:hover {
+    background-color: #1260b3;
+  }
+
+  .remove-question{
+    font-size: 25px;  
+    padding: 5px 15px;
+    margin-left: 10px;    
+    background-color: #dc3545;
+  }
+  
+  .remove-question:hover{
+    background-color: #a52834;
+  }
+  
+  .add-question{
+    font-size: 25px;  
+    padding: 5px 15px;
+    margin-top: 10px;
+    background-color: #2dbb31;
+  }
+  
+  .add-question:hover{
+    background-color: #4caf50;
+  }
+  
+  .submit-btn-container{
+    text-align: center;  
+    margin-top: 10px;
+  }
+  
+  .submit{
+    font-size: 20px;
+    background-color: #2dbb31;
+  }
+  
+  .submit:hover{
+    background-color: #4caf50;
+  }
+
+  .cancel{
+    background-color: #a9a9a9;
+    margin-left: 10px;
+    font-size: 20px;
+  }
+  
+  .cancel:hover{
+    background-color: #888888;
+  }

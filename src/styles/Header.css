@@ -1,0 +1,13 @@
+.logo{
+    width:  100px;
+    height: 55px;
+    margin-top: 6px;
+    margin-left: 20px;
+}
+
+.header{
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(226, 232, 240);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
