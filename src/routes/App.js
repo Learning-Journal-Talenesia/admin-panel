@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import QuestionsTable from '../components/QuestionTable';
 import QuestionAddForm from '../components/QuestionAddForm';
 import QuestionEditForm from '../components/QuestionEditForm';
+import AnswerList from '../components/AnswerList';
 import '../styles/Header.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/table" element={<QuestionsTable />} />
           <Route path="/add_question" element={<QuestionAddForm />} />
           <Route path="/edit_question/:id" element={<QuestionEditForm />} />
+          <Route path="/answer_list" element={<AnswerList/>}/>
         </Routes>
       </Router>
     </div>
