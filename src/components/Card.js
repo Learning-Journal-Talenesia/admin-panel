@@ -22,10 +22,10 @@ const Card = ({ qna }) => {
         />
         {qna.qna.map((item, index) => (
           <div key={index} className="qna-item">              
-            <p className="qna-label">Question</p>
+            <p className="qna-label">Pertanyaan {index+1}</p>
             <input
               type="text"
-              value={item.q ? item.q.join(', ') : ''}  // Display questions from the API
+              value={item.q}  // Display questions from the API
               readOnly
             />              
             <p className="qna-label">Answers</p>

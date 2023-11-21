@@ -1,53 +1,114 @@
 // AnswerList.js
 import React, { useState, useEffect } from 'react';
-import { fetchQnaData } from '../services/api';
-import '../styles/AnswerCard.css';
-import Card from './Card'; // Import the new component
+import { fetchTema, fetchQnaData } from '../services/api';
+import '../styles/Tables.css'
 
 const AnswerList = () => {
-  const [qnaList, setQnaList] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [qnaData, setQnaData] = useState([]);
+  const [themaOptions, setThemaOptions] = useState([]);
+  const [selectedThema, setSelectedThema] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchQnaData();
-        setQnaList(data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+    // Fetch Thema data when the component mounts
+    fetchTema()
+      .then((themaData) => {
+        setThemaOptions(themaData);
+      })
+      .catch((error) => {
+        console.error('Error fetching Thema data:', error);
+      });
 
-    fetchData();
+    // Fetch Q&A data when the component mounts
+    fetchQnaData()
+      .then((data) => {
+        setQnaData(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching Q&A data:', error);
+      });
   }, []);
 
-  const filteredQnaList = qnaList.filter((qna) => {
+  const handleThemaChange = (e) => {
+    // Update the selected Thema when the dropdown value changes
+    setSelectedThema(e.target.value);
+  };
+
+  const handleSearchChange = (e) => {
+    // Update the search query when the input value changes
+    setSearchQuery(e.target.value);
+  };
+
+  // Filter Q&A data based on the selected Thema and search query
+  const filteredQnaData = qnaData.filter((qna) => {
     return (
-      qna.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      qna.idUser.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      qna.idThema.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      qna.thema.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      qna.qna.some((item) =>
-        Array.isArray(item.q) && item.q.join(', ').toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      (!selectedThema || qna.idThema === selectedThema) &&
+      qna.userName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
   return (
     <div>
-      <div className="search-container">
-        <input
-          className='search-input'
-          type="text"
-          placeholder="Cari..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      <div className="content-header">
+        <div className="thema">
+          <select
+            id="thema"
+            className="search-input"
+            value={selectedThema}
+            onChange={handleThemaChange}
+          >
+            <option value="">All</option>
+            {themaOptions.map((thema) => (
+              <option key={thema.idThema} value={thema.idThema}>
+                {thema.thema}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="search-input-container">
+          <input
+            type="text"
+            id="table-search"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="search-input"
+            placeholder="Search Username"
+          />
+        </div>
       </div>
-      <div className="qna-list">
-        {filteredQnaList.map((qna) => (
-          <Card key={qna.id} qna={qna} />
-        ))}
+      <div className="table-container">
+        <table className="my-table">
+          <thead>
+            <tr>
+              <th scope="col">Username</th>              
+              <th scope="col">Tema</th>
+              <th scope="col">Pertanyaan</th>
+              <th scope="col">Answers</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredQnaData.map((qna) => (
+              <tr key={qna._id}>
+                <td>{qna.userName}</td>                
+                <td>{qna.thema}</td>
+                <td>
+                  {qna.qna.map((item, index) => (
+                    <div key={index} className="mb-2">
+                      <p>{item.q}</p>
+                    </div>
+                  ))}
+                </td>
+                <td>
+                  {qna.qna.map((item, index) => (
+                    <div key={index} className="mb-2">
+                      <p>{item.a.join(', ')}</p>
+                    </div>
+                  ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
