@@ -1,6 +1,5 @@
-// MyForm.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { postData } from '../services/api';
 import '../styles/Form.css';
 import '../styles/Button.css';
@@ -11,6 +10,18 @@ const QuestionForm = () => {
   const [questions, setQuestions] = useState(['']);
   const [inputType, setInputType] = useState('checkbox'); // Default to checkbox
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const idThemaParam = searchParams.get('idThema');
+    const themaParam = searchParams.get('thema');
+
+    if (idThemaParam && themaParam) {
+      setIdThema(idThemaParam);
+      setThema(themaParam);
+    }
+  }, [location.search]);
 
   const handleAddQuestion = () => {
     setQuestions([...questions, '']);

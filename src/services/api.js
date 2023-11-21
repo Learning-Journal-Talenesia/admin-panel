@@ -1,8 +1,17 @@
 // api.js
 const BASE_URL = 'https://adorable-tan-wear.cyclic.app/';
+// const BASE_URL = 'http://localhost:3001/';
 
 export const fetchData = async () => {
   const response = await fetch(`${BASE_URL}q/`);
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  return await response.json();
+};
+
+export const fetchTema = async () => {
+  const response = await fetch(`${BASE_URL}tema/`);
   if (!response.ok) {
     throw new Error(`HTTP error! Status: ${response.status}`);
   }
@@ -79,4 +88,38 @@ export const fetchQnaData = () => {
         reject(error);
       });
   });
+};
+
+export const deleteQuestionById = async (id) => {
+  const response = await fetch(`${BASE_URL}q/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  return await response.json();
+};
+
+export const deleteTemaById = async (idThema) => {
+  const response = await fetch(`${BASE_URL}tema/${idThema}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  return await response.json();
+};
+
+export const postTema = async (data) => {
+  const response = await fetch(`${BASE_URL}tema/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  return await response.json();
 };

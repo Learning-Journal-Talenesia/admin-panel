@@ -1,21 +1,25 @@
 // QuestionsTable.js
-
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import QuestionEditForm from '../components/QuestionEditForm';
 import DeleteConfirmation from '../components/QuestionDeleteConfirmation';
-import { fetchData, deleteData } from '../services/api';
+import { fetchTema, fetchData, deleteData, deleteQuestionById, deleteTemaById } from '../services/api';
 import '../styles/Tables.css';
 import '../styles/Button.css';
+import CreateTemaPopup from '../components/TemaAdd';
 
 const QuestionsTable = () => {
   const [data, setData] = useState([]);
+  const [tema, setTema] = useState([]);
   const [editItem, setEditItem] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortByIdTema, setSortByIdTema] = useState('asc');
+  const [selectedThemeId, setSelectedThemeId] = useState('');
+  const [sortByIdThema, setSortByIdThema] = useState('asc');
+  const [showCreateTemaPopup, setShowCreateTemaPopup] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     fetchData()
@@ -23,8 +27,33 @@ const QuestionsTable = () => {
       .catch(error => console.error('Error fetching data:', error));
   }, []);
 
+  useEffect(() => {
+    fetchTema()
+      .then(tema => setTema(tema))
+      .catch(error => console.error('Error fetching data:', error));
+  }, []);
+
+  // Load selected theme from the path on component mount
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const selectedThemeIdParam = searchParams.get('theme');
+    if (selectedThemeIdParam) {
+      setSelectedThemeId(selectedThemeIdParam);
+    }
+  }, [location.search]);
+
   const handleAdd = () => {
-    navigate('/add_question');
+    // Check if a theme is selected
+    if (selectedThemeId) {
+      const selectedTema = tema.find((theme) => theme.idThema === selectedThemeId);
+
+      if (selectedTema) {
+        // Pass the selected theme information to the add question form
+        navigate(`/add_question?idThema=${selectedTema.idThema}&thema=${selectedTema.thema}`);
+      }
+    } else {
+      navigate('/add_question');
+    }
   };
 
   const handleEdit = (id) => {
@@ -62,77 +91,159 @@ const QuestionsTable = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleSortByIdTema = () => {
-    setSortByIdTema(sortByIdTema === 'asc' ? 'desc' : 'asc');
+  const handleThemeChange = (e) => {
+    const selectedThemeId = e.target.value;
+    setSelectedThemeId(selectedThemeId);
+
+    // Update the path with the selected theme
+    navigate(`?theme=${selectedThemeId}`);
   };
+
+  const handleSortByIdThema = () => {
+    setSortByIdThema(sortByIdThema === 'asc' ? 'desc' : 'asc');
+  };
+
+  const handleDeleteTema = async () => {    
+    try {
+      await deleteTemaById(selectedThemeId);
+
+      // Optionally, you can also delete all related questions
+      const questionsToDelete = data.filter(item => item.idThema === selectedThemeId);
+      await Promise.all(questionsToDelete.map(async question => {
+        await deleteQuestionById(question._id);
+      }));
+
+      navigate('/table');
+    } catch (error) {
+      console.error('Error deleting tema:', error);
+    }    
+  };
+
+  const handleCreateTema = async () => {
+    try {
+      // You can add custom logic before showing the popup if needed
+      setShowCreateTemaPopup(true);
+    } catch (error) {
+      console.error('Error creating tema:', error);
+    }
+  };     
 
   const sortedData = [...data];
 
-  if (sortByIdTema) {
+  if (sortByIdThema) {
     sortedData.sort((a, b) =>
-      sortByIdTema === 'asc' ? a.idThema - b.idThema : b.idThema - a.idThema
+      sortByIdThema === 'asc' ? a.idThema - b.idThema : b.idThema - a.idThema
     );
   }
 
-  const filteredData = sortedData.filter(
-    (item) =>
-      item.thema.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.question.some((q) => q.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredData = sortedData.filter(item =>
+    ((item?.thema?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (item?.question?.some(q => q.toLowerCase().includes(searchQuery.toLowerCase())) || false)) &&
+    (selectedThemeId === '' || item?.idThema === selectedThemeId)
   );
 
   return (
     <div>
-      <div className="search-container">
-        <input
-          className='search-input'
-          type="text"
-          placeholder="Cari..."
-          value={searchQuery}
-          onChange={handleSearchChange}
-        />
+      <div className="content-header">
+      <div className="thema">
+        <select onChange={handleThemeChange} value={selectedThemeId}>
+          <option value="">Semua Thema</option>
+          {tema.map((theme) => (
+            <option key={theme._id} value={theme.idThema}>
+              {theme.thema}
+            </option>
+          ))}
+        </select>
+        {selectedThemeId && (
+          <button onClick={handleDeleteTema} className="delete-tema-btn">
+            Delete Thema
+          </button>
+        )}
+        {!selectedThemeId && (
+          <button onClick={handleCreateTema} className="create-tema-btn">
+            Create Thema
+          </button>
+        )}
+      </div>
+        <div className="search-container">
+          <input
+            className='search-input'
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+          />
+        </div>
       </div>
       <button onClick={() => handleAdd()} className="add">
         +
       </button>
-      <div className="table-container">
-        <table className="my-table">
-          <thead>
-            <tr>              
-              <th className='id-tema' onClick={handleSortByIdTema}>
-                <div className="th-content">
-                  <span>ID Tema</span>
-                  <span>
-                    {sortByIdTema === 'asc' ? '▲' : '▼'}
-                  </span>
-                </div>
-              </th>
-              <th>Tema</th>
-              <th>Pertanyaan</th>
-              <th>Tipe</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.map((item) => (
-              <tr key={item._id}>                
-                <td>{item.idThema}</td>
-                <td>{item.thema}</td>
-                <td>{item.question.join(', ')}</td>
-                <td>{item.inputType}</td>
-                <td className="acolumn">
-                  <button onClick={() => handleEdit(item._id)} className="btn edit">
-                    Ubah
-                  </button>
-                  <button onClick={() => handleDelete(item._id)} className="btn delete">
-                    Hapus
-                  </button>
-                </td>
+      {filteredData.length > 0 ? (
+        <div className="table-container">
+          <table className="my-table">
+            <thead>
+              <tr>
+                {selectedThemeId === "" && (
+                  <>
+                    <th onClick={handleSortByIdThema} className='th-id-tema'>
+                      ID Thema<span>{sortByIdThema === 'asc' ? '▲' : '▼'}</span>
+                    </th>
+                    <th>Thema</th>
+                  </>
+                )}
+                <th>Pertanyaan</th>
+                <th>Tipe</th>
+                <th>Aksi</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {editItem && <QuestionEditForm item={editItem} onUpdate={handleUpdate} />}
+            </thead>
+            <tbody>
+              {filteredData.map((item) => (
+                <tr key={item._id}>
+                  {selectedThemeId === "" && (
+                    <>
+                      <td>{item.idThema}</td>
+                      <td>{item.thema}</td>
+                    </>
+                  )}
+                  <td>{item.question.join(', ')}</td>
+                  <td>{item.inputType}</td>
+                  <td className="acolumn">
+                    <button
+                      onClick={() => handleEdit(item._id)}
+                      className="btn edit"
+                    >
+                      Ubah
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="btn delete"
+                    >
+                      Hapus
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {showCreateTemaPopup && (
+        <CreateTemaPopup
+          onClose={() => setShowCreateTemaPopup(false)}
+          onCreate={() => {
+            // Optionally, you can refresh data after creating Thema
+            fetchData()
+              .then((data) => setData(data))
+              .catch((error) => console.error('Error fetching data:', error));
+            setShowCreateTemaPopup(false);
+          }}
+        />
+      )}
+        </div>
+      ) : (
+        <p>Click + to add data.</p>
+      )}
+      {editItem && (
+        <QuestionEditForm item={editItem} onUpdate={handleUpdate} />
+      )}
       {showConfirmation && (
         <DeleteConfirmation
           onConfirm={handleConfirmDelete}
