@@ -1,6 +1,6 @@
 /* DeleteConfirmation.css */
 
-.delete-confirmation-overlay {
+.confirmation-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -13,7 +13,7 @@
     z-index: 999;
   }
   
-  .delete-confirmation-box {
+  .confirmation-box {
     background: #fff;
     padding: 20px;
     border-radius: 8px;

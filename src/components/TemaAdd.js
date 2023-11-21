@@ -1,16 +1,19 @@
 // CreateTemaPopup.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { postTema } from '../services/api';
+import '../styles/Confirmation.css';
+import '../styles/Form.css';
+import '../styles/Button.css';
 
 const CreateTemaPopup = ({ onClose, onCreate }) => {
   const [idThema, setIdThema] = useState('');
   const [thema, setThema] = useState('');
+  const navigate = useNavigate();
 
   const handleCreateTema = async () => {
-    try {
-      // Validate that idThema and thema are not empty
-      if (!idThema || !thema) {
-        // Handle validation error
+    try {      
+      if (!idThema || !thema) {        
         return;
       }
 
@@ -19,33 +22,38 @@ const CreateTemaPopup = ({ onClose, onCreate }) => {
         thema,
       };
 
-      await postTema(newTema);
-      onCreate();
+      await postTema(newTema);            
+      navigate(`/table?theme=${idThema}`);
+      navigate(0);
     } catch (error) {
       console.error('Error creating tema:', error);
     }
   };
 
   return (
-    <div className="popup-container">
-      <div className="popup">
-        <h2>Create New Thema</h2>
-        <label htmlFor="idThema">ID Thema:</label>
+    <div className="confirmation-overlay">
+      <div className="confirmation-box my-form">
+        <h1>Buat Tema Baru</h1>
+        <label htmlFor="idThema">ID Tema</label>
         <input
           type="text"
           id="idThema"
           value={idThema}
           onChange={(e) => setIdThema(e.target.value)}
+          required
         />
-        <label htmlFor="thema">Thema Title:</label>
+        <label htmlFor="thema">Judul Tema</label>
         <input
           type="text"
           id="thema"
           value={thema}
           onChange={(e) => setThema(e.target.value)}
+          required
         />
-        <button onClick={handleCreateTema}>Create Thema</button>
-        <button onClick={onClose}>Cancel</button>
+        <div className='center-div'>
+          <button onClick={handleCreateTema} className="btn submit">Buat Tema</button>
+          <button onClick={onClose} className='btn cancel'>Batal</button>
+        </div>
       </div>
     </div>
   );

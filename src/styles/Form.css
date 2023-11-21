@@ -64,3 +64,7 @@ h1{
 .input-type:hover{
   cursor: no-drop;
 }
+
+.center-div{
+  text-align: center;
+}

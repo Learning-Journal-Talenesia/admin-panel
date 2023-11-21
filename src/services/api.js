@@ -1,6 +1,5 @@
 // api.js
 const BASE_URL = 'https://adorable-tan-wear.cyclic.app/';
-// const BASE_URL = 'http://localhost:3001/';
 
 export const fetchData = async () => {
   const response = await fetch(`${BASE_URL}q/`);

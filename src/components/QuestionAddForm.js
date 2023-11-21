@@ -51,7 +51,7 @@ const QuestionForm = () => {
       };
 
       await postData(newData);
-      navigate('/table');
+      navigate(-1);
     } catch (error) {
       alert(`Failed to add data. Please try again. \n ${error}`);
     }

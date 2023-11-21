@@ -4,8 +4,8 @@ import '../styles/Button.css';
 
 const QuestionDeleteConfirmation = ({ onConfirm, onCancel }) => {
   return (
-    <div className="delete-confirmation-overlay">
-      <div className="delete-confirmation-box">
+    <div className="confirmation-overlay">
+      <div className="confirmation-box">
         <p className="confirmation-message">Anda Yakin Ingin Menghapus Pertanyaan Ini?</p>
         <div className="confirmation-buttons">
           <button onClick={onConfirm} className="btn remove-question">Ya</button>

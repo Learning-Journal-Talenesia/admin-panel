@@ -13,6 +13,7 @@ const QuestionsTable = () => {
   const [tema, setTema] = useState([]);
   const [editItem, setEditItem] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showConfirmationTema, setShowConfirmationTema] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedThemeId, setSelectedThemeId] = useState('');
@@ -96,7 +97,12 @@ const QuestionsTable = () => {
     setSelectedThemeId(selectedThemeId);
 
     // Update the path with the selected theme
-    navigate(`?theme=${selectedThemeId}`);
+    if(selectedThemeId!=="")
+    {
+      navigate(`?theme=${selectedThemeId}`);
+    }else{
+      navigate(``);
+    }
   };
 
   const handleSortByIdThema = () => {
@@ -105,18 +111,37 @@ const QuestionsTable = () => {
 
   const handleDeleteTema = async () => {    
     try {
+      // Set showConfirmation to true to open the confirmation popup
+      setShowConfirmationTema(true);
+    } catch (error) {
+      console.error('Error deleting tema:', error);
+    }    
+  };
+
+  const handleConfirmDeleteTema = async () => {
+    try {
+      // Delete the selected theme and related questions
       await deleteTemaById(selectedThemeId);
 
-      // Optionally, you can also delete all related questions
       const questionsToDelete = data.filter(item => item.idThema === selectedThemeId);
       await Promise.all(questionsToDelete.map(async question => {
         await deleteQuestionById(question._id);
       }));
 
+      // Navigate back to the table view
       navigate('/table');
+      navigate(0);
     } catch (error) {
       console.error('Error deleting tema:', error);
-    }    
+    } finally {
+      // Close the confirmation popup
+      setShowConfirmationTema(false);
+    }
+  };
+
+  const handleCancelDeleteTema = () => {
+    // Close the confirmation popup
+    setShowConfirmationTema(false);
   };
 
   const handleCreateTema = async () => {
@@ -156,14 +181,12 @@ const QuestionsTable = () => {
         </select>
         {selectedThemeId && (
           <button onClick={handleDeleteTema} className="delete-tema-btn">
-            Delete Thema
+            Hapus Tema
           </button>
-        )}
-        {!selectedThemeId && (
+        )}        
           <button onClick={handleCreateTema} className="create-tema-btn">
-            Create Thema
-          </button>
-        )}
+            Buat Tema
+          </button>        
       </div>
         <div className="search-container">
           <input
@@ -178,7 +201,7 @@ const QuestionsTable = () => {
       <button onClick={() => handleAdd()} className="add">
         +
       </button>
-      {filteredData.length > 0 ? (
+      {!selectedThemeId||filteredData.length > 0 ? (
         <div className="table-container">
           <table className="my-table">
             <thead>
@@ -248,6 +271,13 @@ const QuestionsTable = () => {
         <DeleteConfirmation
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
+        />
+      )}
+
+      {showConfirmationTema && (
+        <DeleteConfirmation
+          onConfirm={handleConfirmDeleteTema}
+          onCancel={handleCancelDeleteTema}
         />
       )}
     </div>
