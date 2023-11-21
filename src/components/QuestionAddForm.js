@@ -120,6 +120,7 @@ const QuestionForm = () => {
           <option value="checkbox">Checkbox</option>
           <option value="radiobutton">Radio Button</option>
           <option value="textarea">Textarea</option>
+          <option value="text">Text</option>
         </select>
         {renderInputField()}
         <div className="submit-btn-container">
